@@ -1,0 +1,33 @@
+[package]
+name = "mockwatchlogs"
+version = "0.1.0"
+authors = ["Lucio Franco <luciofranco14@gmail.com>"]
+edition = "2018"
+publish = false
+
+[dependencies]
+bytes = "0.4"
+futures = "0.1"
+tower-service = "0.2"
+tower-hyper = { git = "https://github.com/tower-rs/tower-hyper" }
+hyper = "0.12"
+tokio-tcp = "0.1"
+tokio-signal = "0.2"
+serde = { version = "1.0", features = ["derive"]}
+serde_json = "1.0"
+tokio-trace = { git = "https://github.com/tokio-rs/tokio" }
+tokio-trace-fmt = { git = "https://github.com/tokio-rs/tokio-trace-nursery"}
+tokio-trace-env-logger = { git = "https://github.com/tokio-rs/tokio-trace-nursery"}
+tokio-trace-futures = { git = "https://github.com/tokio-rs/tokio-trace-nursery"}
+tokio-trace-tower-http = { git = "https://github.com/tokio-rs/tokio-trace-nursery"}
+
+[dev-dependencies]
+tokio = "0.1"
+rusoto_core = "0.36"
+rusoto_logs = "0.36"
+chrono = "0.4"
+
+[patch.crates-io]
+tokio-trace = { git = "https://github.com/tokio-rs/tokio" }
+tower-service = { git = "https://github.com/tower-rs/tower"}
+tower-util = { git = "https://github.com/tower-rs/tower.git" }
