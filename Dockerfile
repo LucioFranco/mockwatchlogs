@@ -10,7 +10,7 @@ RUN cargo fetch --locked
 COPY src src
 RUN cargo build -p mockwatchlogs --bin mockwatchlogs --frozen --release
 
-FROM scratch as runtime
+FROM ubuntu as runtime
 WORKDIR /mockwatchlogs
 COPY --from=build /usr/src/mockwatchlogs/target/release/mockwatchlogs ./mockwatchlogs
 ENTRYPOINT ["/mockwatchlogs/mockwatchlogs"]
