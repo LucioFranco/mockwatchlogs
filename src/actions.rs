@@ -34,14 +34,44 @@ pub fn describe_streams(
     Ok(Response::new(Body::from(body)))
 }
 
+pub fn describe_groups(
+    context: &mut Context,
+    request: DescribeLogGroupsRequest,
+) -> Result<Response, ServiceError> {
+    if let Some(name) = &request.log_group_name_prefix {
+        if let Some(group) = context.groups.get(name) {
+            let group = LogGroup {
+                log_group_name: Some(group.name.clone()),
+                ..Default::default()
+            };
+
+            let response = DescribeLogGroupsResponse {
+                log_groups: vec![group].into(),
+                next_token: Some("token".into()),
+            };
+
+            let body = serde_json::to_vec(&response).unwrap();
+            Ok(Response::new(Body::from(body)))
+        } else {
+            Err(ServiceError::NotFound(name.clone()))
+        }
+    } else {
+        unreachable!()
+    }
+}
+
 pub fn create_group(
     context: &mut Context,
     request: CreateLogGroupRequest,
 ) -> Result<Response, ServiceError> {
     if let None = context.groups.get(&request.log_group_name) {
-        context
-            .groups
-            .insert(request.log_group_name, Group::default());
+        context.groups.insert(
+            request.log_group_name.clone(),
+            Group {
+                name: request.log_group_name,
+                ..Default::default()
+            },
+        );
         Ok(Response::new(Body::empty()))
     } else {
         Err(ServiceError::ResourceAlreadyExistsException)

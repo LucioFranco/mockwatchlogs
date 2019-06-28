@@ -126,6 +126,13 @@ impl Router {
                     describe_streams(&mut context, req).or_else(|e| Ok(e.into()))
                 }
 
+                "Logs_20140328.DescribeLogGroups" => {
+                    // TODO: make this a 500
+                    let mut context = context.lock().unwrap();
+                    let req = extract(&body).unwrap();
+                    describe_groups(&mut context, req).or_else(|e| Ok(e.into()))
+                }
+
                 "Logs_20140328.CreateLogGroup" => {
                     let mut context = context.lock().unwrap();
                     let req = extract(&body).unwrap();

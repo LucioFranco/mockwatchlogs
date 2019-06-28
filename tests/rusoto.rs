@@ -1,9 +1,37 @@
 use rusoto_core::Region;
 use rusoto_logs::{
     CloudWatchLogs, CloudWatchLogsClient, CreateLogGroupRequest, CreateLogStreamRequest,
-    DescribeLogStreamsRequest, GetLogEventsRequest, InputLogEvent, PutLogEventsRequest,
+    DescribeLogGroupsRequest, DescribeLogStreamsRequest, GetLogEventsRequest, InputLogEvent,
+    LogGroup, PutLogEventsRequest,
 };
 use std::default::Default;
+
+#[test]
+fn describe_group() {
+    let addr = start_server();
+    let client = client(addr);
+
+    let req = CreateLogGroupRequest {
+        log_group_name: "test-group".into(),
+        ..Default::default()
+    };
+
+    client.create_log_group(req).sync().unwrap();
+
+    let mut desc_groups_req = DescribeLogGroupsRequest::default();
+    desc_groups_req.log_group_name_prefix = "test-group".to_string().into();
+
+    let res = client.describe_log_groups(desc_groups_req).sync().unwrap();
+
+    let groups = res.log_groups.unwrap();
+    assert_eq!(
+        groups,
+        vec![LogGroup {
+            log_group_name: Some("test-group".into()),
+            ..Default::default()
+        }]
+    );
+}
 
 #[test]
 fn group_not_found() {

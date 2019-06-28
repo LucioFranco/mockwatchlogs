@@ -43,6 +43,64 @@ pub struct DescribeLogStreamsResponse {
     pub next_token: Option<String>,
 }
 
+#[derive(Default, Debug, Clone, PartialEq, Deserialize)]
+pub struct DescribeLogGroupsRequest {
+    /// <p>The maximum number of items returned. If you don't specify a value, the default is up to 50 items.</p>
+    #[serde(rename = "limit")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub limit: Option<i64>,
+    /// <p>The prefix to match.</p>
+    #[serde(rename = "logGroupNamePrefix")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub log_group_name_prefix: Option<String>,
+    /// <p>The token for the next set of items to return. (You received this token from a previous call.)</p>
+    #[serde(rename = "nextToken")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub next_token: Option<String>,
+}
+
+#[derive(Default, Debug, Clone, PartialEq, Serialize)]
+pub struct LogGroup {
+    /// <p>The Amazon Resource Name (ARN) of the log group.</p>
+    #[serde(rename = "arn")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub arn: Option<String>,
+    /// <p>The creation time of the log group, expressed as the number of milliseconds after Jan 1, 1970 00:00:00 UTC.</p>
+    #[serde(rename = "creationTime")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub creation_time: Option<i64>,
+    /// <p>The Amazon Resource Name (ARN) of the CMK to use when encrypting log data.</p>
+    #[serde(rename = "kmsKeyId")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub kms_key_id: Option<String>,
+    /// <p>The name of the log group.</p>
+    #[serde(rename = "logGroupName")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub log_group_name: Option<String>,
+    /// <p>The number of metric filters.</p>
+    #[serde(rename = "metricFilterCount")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub metric_filter_count: Option<i64>,
+    #[serde(rename = "retentionInDays")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub retention_in_days: Option<i64>,
+    /// <p>The number of bytes stored.</p>
+    #[serde(rename = "storedBytes")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub stored_bytes: Option<i64>,
+}
+
+#[derive(Default, Debug, Clone, PartialEq, Serialize)]
+pub struct DescribeLogGroupsResponse {
+    /// <p>The log groups.</p>
+    #[serde(rename = "logGroups")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub log_groups: Option<Vec<LogGroup>>,
+    #[serde(rename = "nextToken")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub next_token: Option<String>,
+}
+
 /// <p>Represents a log stream, which is a sequence of log events from a single emitter of logs.</p>
 #[derive(Default, Debug, Clone, PartialEq, Deserialize, Serialize)]
 pub struct LogStream {
