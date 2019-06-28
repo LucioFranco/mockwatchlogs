@@ -10,7 +10,7 @@ use tokio_trace_futures::Instrument;
 fn main() {
     let subscriber = tokio_trace_fmt::FmtSubscriber::builder()
         .with_filter(tokio_trace_fmt::filter::EnvFilter::from(
-            "mockwatchlogs=info",
+            "mockwatchlogs=trace",
         ))
         .full()
         .finish();
