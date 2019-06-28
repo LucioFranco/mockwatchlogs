@@ -11,6 +11,6 @@ This is a (WIP) AWS Cloudwatch Logs mock server
  To build the docker container run:
  
  ```bash
- docker build -t luciofranco/mockwatchlogs:latest
+ docker build -t luciofranco/mockwatchlogs:latest .
  ```
 
