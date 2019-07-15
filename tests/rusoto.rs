@@ -1,8 +1,8 @@
 use rusoto_core::Region;
 use rusoto_logs::{
     CloudWatchLogs, CloudWatchLogsClient, CreateLogGroupRequest, CreateLogStreamRequest,
-    DescribeLogGroupsRequest, DescribeLogStreamsRequest, GetLogEventsRequest, InputLogEvent,
-    LogGroup, PutLogEventsRequest,
+    DescribeLogGroupsRequest, DescribeLogStreamsRequest, DescribeLogStreamsError,
+    GetLogEventsRequest, InputLogEvent, LogGroup, PutLogEventsRequest,
 };
 use std::default::Default;
 
@@ -105,6 +105,26 @@ fn stream_found() {
     let stream_name = stream.log_stream_name.unwrap();
 
     assert_eq!(stream_name, "test-log-stream".to_string());
+}
+
+#[test]
+fn stream_failure() {
+    let addr = start_server();
+    let client = client(addr);
+
+    let desc_streams_req = DescribeLogStreamsRequest {
+        log_group_name: "ServiceUnavailable".into(),
+        ..Default::default()
+    };
+
+    let res = client
+        .describe_log_streams(desc_streams_req)
+        .sync()
+        .unwrap_err();
+    match res {
+      DescribeLogStreamsError::ServiceUnavailable(_) => (),
+      x => panic!("{:?}", x)
+    }
 }
 
 #[test]

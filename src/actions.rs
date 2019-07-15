@@ -7,9 +7,9 @@ pub fn describe_streams(
     context: &mut Context,
     request: DescribeLogStreamsRequest,
 ) -> Result<Response, ServiceError> {
-    let group = context.groups.get(&request.log_group_name);
-
-    let streams = if let Some(group) = group {
+    let streams = if let Some(err) = to_service_error(&request.log_group_name) {
+        return Err(err);
+    } else if let Some(group) = context.groups.get(&request.log_group_name) {
         group.streams.clone()
     } else {
         return Err(ServiceError::NotFound("Group not found".into()));
@@ -171,8 +171,17 @@ pub fn get_logs(
 }
 
 pub enum ServiceError {
+    ServiceUnavailable,
     NotFound(String),
     ResourceAlreadyExistsException,
+}
+
+fn to_service_error(e: &String) -> Option<ServiceError> {
+    if e == "ServiceUnavailable" {
+        Some(ServiceError::ServiceUnavailable)
+    } else {
+        None
+    }
 }
 
 fn to_response(json: &Value) -> hyper::Response<hyper::Body> {
@@ -187,6 +196,11 @@ fn to_response(json: &Value) -> hyper::Response<hyper::Body> {
 impl From<ServiceError> for hyper::Response<hyper::Body> {
     fn from(e: ServiceError) -> Self {
         match e {
+            ServiceError::ServiceUnavailable =>
+                to_response(&json!({
+                    "__type": "ServiceUnavailableException",
+                    "message": "Gone fishing"
+                })),
             ServiceError::NotFound(message) =>
                 to_response(&json!({
                     "__type": "ResourceNotFoundException",
