@@ -1,7 +1,7 @@
 use crate::streams::{Group, Stream};
 use crate::types::*;
 use crate::{Body, Context, Response};
-use serde_json::json;
+use serde_json::{json, Value};
 
 pub fn describe_streams(
     context: &mut Context,
@@ -175,35 +175,28 @@ pub enum ServiceError {
     ResourceAlreadyExistsException,
 }
 
+fn to_response(json: &Value) -> hyper::Response<hyper::Body> {
+    let body = serde_json::to_vec(json).unwrap();
+
+    hyper::Response::builder()
+        .status(400)
+        .body(hyper::Body::from(body))
+        .unwrap()
+}
+
 impl From<ServiceError> for hyper::Response<hyper::Body> {
     fn from(e: ServiceError) -> Self {
         match e {
-            ServiceError::NotFound(message) => {
-                let json = json!({
+            ServiceError::NotFound(message) =>
+                to_response(&json!({
                     "__type": "ResourceNotFoundException",
                     "message": message
-                });
-
-                let body = serde_json::to_vec(&json).unwrap();
-
-                hyper::Response::builder()
-                    .status(404)
-                    .body(hyper::Body::from(body))
-                    .unwrap()
-            }
-            ServiceError::ResourceAlreadyExistsException => {
-                let json = json!({
+                })),
+            ServiceError::ResourceAlreadyExistsException =>
+                to_response(&json!({
                     "__type": "ResourceAlreadyExistsException",
                     "message": "Resource not found"
-                });
-
-                let body = serde_json::to_vec(&json).unwrap();
-
-                hyper::Response::builder()
-                    .status(404)
-                    .body(hyper::Body::from(body))
-                    .unwrap()
-            }
+                }))
         }
     }
 }
